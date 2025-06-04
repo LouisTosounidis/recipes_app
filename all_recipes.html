@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Όλες οι Συνταγές</title>
+    <link rel="stylesheet" href="style/mycss.css">
+    <script src="libraries/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+    <div id="headerContainer"></div>
+
+    <div class="MainSideBarContainer">
+        <div id="sideBarContainer"></div>
+        <div class="main">
+            <h2>Όλες οι Συνταγές</h2>
+
+            <div id="all-recipes">
+                <p>Φόρτωση συνταγών...</p>
+            </div>
+
+            <div id="recipes-pagination" class="pagination"></div>
+
+            <div id="user-actions" class="user-actions">
+                <div id="logged-in-actions" style="display: none;">
+                    <p><a href="user.html" class="user-link">Πίσω στις συνταγές μου</a></p>
+                </div>
+                <div id="logged-out-actions" style="display: none;">
+                    <p>Για να προσθέσετε τη δική σας συνταγή ή να κάνετε like και σχόλια, <a
+                            href="index.html">συνδεθείτε</a> ή <a href="register.html">εγγραφείτε</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footerContainer"></div>
+</body>
+</html>
+<script src="javascript/UIelements.js"></script>
+<script src="javascript/recipes.js"></script>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Προβολή συνταγής</title>
+    <link rel="stylesheet" href="style/mycss.css">
+    <script src="libraries/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div id="headerContainer"></div>
+
+
+    <div class="MainSideBarContainer">
+        <div id="sideBarContainer"></div>
+        <div id = "main">
+            <div id = "recipe-container">
+                <p>Φόρτωση συνταγής...</p>
+            </div>
+
+            <div id = "comments-section" style="display: none;">
+                <h3>Σχόλια</h3>
+                <div id = "comments-list"></div>
+                <div id = "comment-form" style="display: none;">
+                    <form id = "add-comment-form">
+                        <input type="hidden" id = "recipe-id" name="recipe_id">
+                        <div class="form-group">
+                            <label for="comment-text">Το σχόλιο σας:</label>
+                            <textarea id ="comment-text" name="comment" rows = "3" required></textarea>
+                        </div>
+                        <button type="submit" class = "recipe-btn submit-btn">Προσθήκη σχολίου</button>
+                    </form>
+                </div>
+                
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="footerContainer"></div>
+</body>
+
+</html>
+<script src = "javascript/UIelements.js"></script>
+<script src = "javascript/recipe.js"></script>

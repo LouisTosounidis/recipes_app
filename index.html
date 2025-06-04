@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Εργασία Web</title>
+  <link rel="stylesheet" type="text/css" href="style/mycss.css" />
+  <script src="libraries/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+  <div id = "headerContainer"></div>
+
+  <div id="container">
+
+    <div class="MainSideBarContainer">
+      <div id = "sideBarContainer"> </div>
+      <div class="main">
+        <h2>Home Page</h2>
+
+        <div id="message-container" style="color: green;"></div>
+
+        <p>Please login:</p>
+        <form id="loginForm">
+          <p>username: <input type="text" name="username" /> </p>
+          <p>password: <input type="password" name="password" /> </p>
+          <p class="centered-text">
+            <button type="submit">Login</button>
+          </p>
+        </form>
+
+        <div>Αν δεν είστε ακόμη εγγεγραμμένος <a href="register.html">πατήστε εδώ για εγγραφή!!!</a></div>
+      </div>
+    </div>
+
+  </div>
+  <div id="footerContainer"></div>
+</body>
+<script src="javascript/UIelements.js"></script>
+<script src="javascript/login.js"></script>
+
+</html>

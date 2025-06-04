@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User page</title>
+    <link rel="stylesheet" href="style/mycss.css">
+    <script src="libraries/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div id="headerContainer"></div>
+    
+    <div class="MainSideBarContainer">
+        <div id="sideBarContainer"></div>
+        <div class="main">
+            <h2>Σελίδα Χρήστη</h2>
+            <div id="user-info">
+                <p>Φόρτωση στοιχείων χρήστη...</p>
+            </div>
+            
+            <div id="recipes-section">
+                <h3>Οι Συνταγές μου</h3>
+                
+                <div id="recipe-form-container">
+                    <button id="show-recipe-form" class="recipe-btn">Προσθήκη Νέας Συνταγής</button>
+                    
+                    <div id="recipe-form" style="display: none;">
+                        <form id="add-recipe-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="recipe-title">Τίτλος Συνταγής:</label>
+                                <input type="text" id="recipe-title" name="title" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="recipe-ingredients">Υλικά:</label>
+                                <textarea id="recipe-ingredients" name="ingredients" rows="5" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="recipe-instructions">Οδηγίες Παρασκευής:</label>
+                                <textarea id="recipe-instructions" name="instructions" rows="8" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="recipe-image">Εικόνα (προαιρετική):</label>
+                                <input type="file" id="recipe-image" name="image" accept="image/*">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="recipe-btn submit-btn">Αποθήκευση</button>
+                                <button type="button" id="cancel-recipe" class="recipe-btn cancel-btn">Ακύρωση</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div id="user-recipes">
+                    <p>Φόρτωση συνταγών...</p>
+                </div>
+                
+                <div id="recipes-pagination" class="pagination"></div>
+            </div>
+            
+            <p><a href="php/logout.php" class="logout-link">Αποσύνδεση</a></p>
+            <p><a href="all_recipes.html" class="all-recipes-link">Δείτε όλες τις συνταγές</a></p>
+        </div>
+    </div>
+    
+    <div id="footerContainer"></div>
+    
+
+</body>
+<script src = "javascript/user.js"></script>
+<script src = "javascript/UIelements.js"></script>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Προβολή Συνταγής</title>
+    <link rel="stylesheet" href="style/mycss.css">
+    <script src="libraries/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div id="headerContainer"></div>
+    
+    <div class="MainSideBarContainer">
+        <div id="sideBarContainer"></div>
+        <div class="main">
+            <div id="recipe-container">
+                <p>Φόρτωση συνταγής...</p>
+            </div>
+            
+            <div id="comments-section" style="display: none;">
+                <h3>Σχόλια</h3>
+                
+                <div id="comment-form" style="display: none;">
+                    <form id="add-comment-form">
+                        <input type="hidden" id="recipe-id" name="recipe_id">
+                        <div class="form-group">
+                            <label for="comment-text">Το σχόλιό σας:</label>
+                            <textarea id="comment-text" name="comment" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="recipe-btn submit-btn">Προσθήκη Σχολίου</button>
+                    </form>
+                </div>
+                
+                <div id="comments-list">
+                </div>
+            </div>
+            
+            <div class="navigation-links">
+                <a href="all_recipes.html" class="back-link">Πίσω στις συνταγές</a>
+                <span id="user-page-link" style="display: none;"> | <a href="user.html">Οι συνταγές μου</a></span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="footerContainer"></div>
+    
+    <script>
+        $(document).ready(function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var recipeId = urlParams.get('id');
+            
+            if (!recipeId) {
+                $('#recipe-container').html('<p class="error">Δεν βρέθηκε η συνταγή.</p>');
+                return;
+            }
+            
+            var userLoggedIn = false;
+            var userId = 0;
+            
+            $.ajax({
+                url: 'php/check_session.php',
+                method: 'GET',
+                dataType: 'json',
+                async: false,
+                success: function(response) {
+                    if (response.logged_in) {
+                        userLoggedIn = true;
+                        userId = response.user_id;
+                        $('#user-page-link').show();
+                    }
+                }
+            });
+            
+            loadRecipe(recipeId);
+            
+            function loadRecipe(id) {
+                $.ajax({
+                    url: 'php/get_recipes.php',
+                    method: 'GET',
+                    data: {
+                        type: 'single',
+                        id: id
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success && response.recipes.length > 0) {
+                            displayRecipe(response.recipes[0]);
+                            
+                            if (userLoggedIn) {
+                                $('#recipe-id').val(id);
+                                $('#comment-form').show();
+                            }
+                            
+                            $('#comments-section').show();
+                            displayComments(response.recipes[0].comments);
+                        } else {
+                            $('#recipe-container').html('<p class="error">Η συνταγή δεν βρέθηκε.</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Loading recipe error:", error);
+                        console.log(xhr.responseText);
+                        $('#recipe-container').html('<p class="error">Παρουσιάστηκε σφάλμα κατά τη φόρτωση της συνταγής.</p>');
+                    }
+                });
+            }
+            
+            function displayRecipe(recipe) {
+                var output = '<div class="recipe-full">';
+                
+                output += '<h2>' + recipe.title + '</h2>';
+                output += '<p class="recipe-author">Από: ' + recipe.username + '</p>';
+                
+                if (recipe.image_path) {
+                    output += '<div class="recipe-image-full"><img src="' + recipe.image_path + '" alt="' + recipe.title + '"></div>';
+                }
+                
+                output += '<div class="recipe-likes">';
+                
+                if (userLoggedIn) {
+                    var likeButtonClass = recipe.user_liked > 0 ? 'liked' : '';
+                    output += '<button id="like-recipe" class="like-btn ' + likeButtonClass + '" data-recipe-id="' + recipe.id + '">';
+                    output += '<span class="like-icon">❤</span> <span class="like-count">' + recipe.likes_count + '</span>';
+                    output += '</button>';
+                } else {
+                    output += '<span class="like-count-only"><span class="like-icon">❤</span> ' + recipe.likes_count + '</span>';
+                }
+                
+                output += '</div>';
+                
+                output += '<div class="recipe-content">';
+                output += '<h3>Υλικά</h3>';
+                output += '<div class="recipe-ingredients">';
+                
+                var ingredients = recipe.ingredients.split('\n');
+                output += '<ul>';
+                for (var i = 0; i < ingredients.length; i++) {
+                    if (ingredients[i].trim() !== '') {
+                        output += '<li>' + ingredients[i] + '</li>';
+                    }
+                }
+                output += '</ul>';
+                
+                output += '</div>';
+                
+                output += '<h3>Οδηγίες Παρασκευής</h3>';
+                output += '<div class="recipe-instructions">';
+                
+                var instructions = recipe.instructions.split('\n');
+                for (var i = 0; i < instructions.length; i++) {
+                    if (instructions[i].trim() !== '') {
+                        output += '<p>' + instructions[i] + '</p>';
+                    }
+                }
+                
+                output += '</div>';
+                output += '</div>';
+                
+                output += '</div>';
+                
+                $('#recipe-container').html(output);
+                
+                $('#like-recipe').click(function() {
+                    likeRecipe($(this).data('recipe-id'));
+                });
+            }
+            
+            function displayComments(comments) {
+                var output = '';
+                
+                if (!comments || comments.length === 0) {
+                    output = '<p class="no-comments">Δεν υπάρχουν ακόμη σχόλια. Γίνετε ο πρώτος που θα σχολιάσει!</p>';
+                } else {
+                    output = '<div class="comments-list">';
+                    
+                    $.each(comments, function(index, comment) {
+                        output += '<div class="comment">';
+                        output += '<div class="comment-header">';
+                        output += '<span class="comment-author">' + comment.username + '</span>';
+                        
+                        var date = new Date(comment.date_created);
+                        var formattedDate = date.toLocaleDateString('el-GR') + ' ' + date.toLocaleTimeString('el-GR', {hour: '2-digit', minute:'2-digit'});
+                        
+                        output += '<span class="comment-date">' + formattedDate + '</span>';
+                        output += '</div>';
+                        output += '<div class="comment-body">' + comment.comment + '</div>';
+                        output += '</div>';
+                    });
+                    
+                    output += '</div>';
+                }
+                
+                $('#comments-list').html(output);
+            }
+            
+            function likeRecipe(recipeId) {
+                $.ajax({
+                    url: 'php/recipes.php',
+                    method: 'POST',
+                    data: {
+                        action: 'like',
+                        recipe_id: recipeId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Ενημέρωση του UI
+                            $('.like-count').text(response.count);
+                            
+                            if (response.action === 'liked') {
+                                $('#like-recipe').addClass('liked');
+                            } else {
+                                $('#like-recipe').removeClass('liked');
+                            }
+                        } else {
+                            alert('Σφάλμα: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Like error:", error);
+                        console.log(xhr.responseText);
+                        alert('Παρουσιάστηκε σφάλμα κατά την προσθήκη του like.');
+                    }
+                });
+            }
+            
+            $('#add-comment-form').submit(function(e) {
+                e.preventDefault();
+                
+                var recipeId = $('#recipe-id').val();
+                var comment = $('#comment-text').val();
+                
+                $.ajax({
+                    url: 'php/recipes.php',
+                    method: 'POST',
+                    data: {
+                        action: 'comment',
+                        recipe_id: recipeId,
+                        comment: comment
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#comment-text').val('');
+                            
+                            var newComment = '<div class="comment">';
+                            newComment += '<div class="comment-header">';
+                            newComment += '<span class="comment-author">' + response.username + '</span>';
+                            newComment += '<span class="comment-date">' + response.date + '</span>';
+                            newComment += '</div>';
+                            newComment += '<div class="comment-body">' + comment + '</div>';
+                            newComment += '</div>';
+                            
+                            if ($('.no-comments').length) {
+                                $('#comments-list').html('<div class="comments-list">' + newComment + '</div>');
+                            } else {
+                                $('.comments-list').prepend(newComment);
+                            }
+                        } else {
+                            alert('Σφάλμα: ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Comment error:", error);
+                        console.log(xhr.responseText);
+                        alert('Παρουσιάστηκε σφάλμα κατά την προσθήκη του σχολίου.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
